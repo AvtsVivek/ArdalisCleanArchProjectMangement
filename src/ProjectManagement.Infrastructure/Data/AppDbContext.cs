@@ -41,20 +41,38 @@ public class AppDbContext : DbContext
     if (_mediator == null) return result;
 
     // dispatch events only if save was successful
-    var entitiesWithEvents = ChangeTracker.Entries<BaseEntity>()
-        .Select(e => e.Entity)
-        .Where(e => e.Events.Any())
-        .ToArray();
+    //var entitiesWithEvents = ChangeTracker.Entries<BaseEntity>()
+    //    .Select(e => e.Entity)
+    //    .Where(e => e.Events.Any())
+    //    .ToArray();
 
-    foreach (var entity in entitiesWithEvents)
+    //foreach (var entity in entitiesWithEvents)
+    //{
+    //  var events = entity.Events.ToArray();
+    //  entity.Events.Clear();
+    //  foreach (var domainEvent in events)
+    //  {
+    //    await _mediator.Publish(domainEvent).ConfigureAwait(false);
+    //  }
+    //}
+
+    // dispatch events only if save was successful
+    var baseEntities = ChangeTracker.Entries().Where(entry => entry.Entity.GetType().BaseType?.GetGenericTypeDefinition() == typeof(BaseEntity<>))
+      .Select(e => e.Entity).ToList();
+
+    foreach (var baseEntity in baseEntities)
     {
-      var events = entity.Events.ToArray();
-      entity.Events.Clear();
-      foreach (var domainEvent in events)
+      var eventsField = baseEntity.GetType().GetField(nameof(BaseEntity<int>.Events));
+      var listOfDomainEvents = (List<BaseDomainEvent>)eventsField!.GetValue(baseEntity)!;
+      if (listOfDomainEvents.Any())
       {
-        await _mediator.Publish(domainEvent).ConfigureAwait(false);
+        foreach (var domainEvent in listOfDomainEvents)
+        {
+          await _mediator.Publish(domainEvent).ConfigureAwait(false);
+        }
       }
     }
+
 
     return result;
   }

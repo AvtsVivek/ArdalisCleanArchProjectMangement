@@ -5,7 +5,7 @@ using ProjectManagement.SharedKernel.Interfaces;
 
 namespace ProjectManagement.Core.ProjectAggregate;
 
-public class Project : BaseEntity, IAggregateRoot
+public class Project : BaseEntity<int>, IAggregateRoot
 {
   public string Name { get; private set; }
 

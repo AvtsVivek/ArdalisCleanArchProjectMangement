@@ -3,7 +3,7 @@ using ProjectManagement.SharedKernel;
 
 namespace ProjectManagement.Core.ProjectAggregate;
 
-public class ToDoItem : BaseEntity
+public class ToDoItem : BaseEntity<int>
 {
   //public ToDoItem(string title, bool isDone)
   //{
