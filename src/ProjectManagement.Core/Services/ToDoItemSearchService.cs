@@ -49,6 +49,28 @@ public class ToDoItemSearchService : IToDoItemSearchService
     }
   }
 
+  public async Task<Result<List<ToDoItem>>> GetAllItemsAsync(int projectId)
+  {
+
+    var projectSpec = new ProjectByIdWithItemsSpec(projectId);
+    var project = await _repository.GetBySpecAsync(projectSpec);
+
+    // TODO: Optionally use Ardalis.GuardClauses Guard.Against.NotFound and catch
+    if (project == null) return Result<List<ToDoItem>>.NotFound();
+
+    try
+    {
+      // var items = incompleteSpec.Evaluate(project.Items).ToList();
+
+      return new Result<List<ToDoItem>>(project.Items.ToList());
+    }
+    catch (Exception ex)
+    {
+      // TODO: Log details here
+      return Result<List<ToDoItem>>.Error(new[] { ex.Message });
+    }
+  }
+
   public async Task<Result<ToDoItem>> GetNextIncompleteItemAsync(int projectId)
   {
     var projectSpec = new ProjectByIdWithItemsSpec(projectId);

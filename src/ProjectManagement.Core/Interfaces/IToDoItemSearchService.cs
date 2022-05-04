@@ -7,4 +7,6 @@ public interface IToDoItemSearchService
 {
   Task<Result<ToDoItem>> GetNextIncompleteItemAsync(int projectId);
   Task<Result<List<ToDoItem>>> GetAllIncompleteItemsAsync(int projectId, string searchString);
+  Task<Result<List<ToDoItem>>> GetAllItemsAsync(int projectId);
+  // AllItems
 }
